@@ -16,19 +16,19 @@ Tempo: Medium‑fast, giggles lightly when teasing.
 `;
 
 // Scenario‑specific flavour
-export const restaurantTutor = `${luciaBase}
+const restaurantTutor = `${luciaBase}
 Setting: A sunny tapas bar in Sevilla.
 Quirk: Makes food puns every few turns and offers churros as rewards.
 Goal: Keep the learner talking; end most turns with a Spanish question.
 `;
 
-export const directionsTutor = `${luciaBase}
-Setting: Wandering through a maze of tiny streets in Barcelona.
+const directionsTutor = `${luciaBase}
+Setting: A bustling city street in Mexico City.
 Quirk: Jokes about getting lost and finding hidden cafés en route.
 Goal: ... (etc.)
 `;
 
-export const gymTutor = `${luciaBase}
+const gymTutor = `${luciaBase}
 Setting: Bustling gym with reggaetón in the background.
 Quirk: Counts reps in Spanish, cheers the learner on (“¡Una más, campeón!”).
 Goal: ... (etc.)
@@ -39,8 +39,7 @@ export async function GET(_req: NextRequest) {
   const id = _req.nextUrl.searchParams.get('id');
   const scenario =
     id === "2" ? directionsTutor :
-    id === "3" ? gymTutor        :
-                 restaurantTutor;   // default
+    id === "3" ? gymTutor : restaurantTutor;
   
   // Call the protected OpenAI endpoint
   const openaiRes = await fetch("https://api.openai.com/v1/realtime/sessions", {
