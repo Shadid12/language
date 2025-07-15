@@ -8,12 +8,14 @@ import {
   CardTitle,
   CardContent,
 } from "@/components/ui/card";
+
 import {
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
+import DrawerHolder from "@/components/DrawerHolder";
 
 const scenarios = [
   {
@@ -203,6 +205,7 @@ export default function LanguageScenariosPage() {
           <div>No scenario selected</div>
         )}
       </div>
+      <DrawerHolder />
     </div>
   );
 }
