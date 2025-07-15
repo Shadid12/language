@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { Utensils, MapPin, Dumbbell, Mic } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 import {
   Card,
   CardHeader,
@@ -49,6 +51,7 @@ export default function LanguageScenariosPage() {
   const [isRecording, setIsRecording] = useState(false);
 
   const [messages, setMessages] = useState<string[]>([]);
+  const [level, setLevel] = useState(1);
   const addMsg = (t: string) => setMessages((p) => [...p, t.trim()]);
 
   // Refs we need to reuse / clean up
@@ -78,7 +81,7 @@ export default function LanguageScenariosPage() {
 
     try {
       // 1. Get an ephemeral key from our Next.js API route
-      const tokenRes = await fetch(`/api/session?id=${selectedId}`);
+      const tokenRes = await fetch(`/api/session?id=${selectedId}&level=${level}`);
       if (!tokenRes.ok) throw new Error("Could not fetch session token");
       const { client_secret } = await tokenRes.json();
       const EPHEMERAL_KEY = client_secret.value as string;
@@ -199,6 +202,21 @@ export default function LanguageScenariosPage() {
                   {isRecording ? "Listening…" : "Start Conversation"}
                 </span>
               </button>
+              <div className="mb-8 flex flex-col items-center gap-3">
+                <Label htmlFor="level-slider" className="text-lg font-medium">
+                    Difficulty Level: <span className="font-bold">{level}</span>
+                </Label>
+
+                <Slider
+                    id="level-slider"
+                    min={1}
+                    max={3}
+                    step={1}
+                    value={[level]}
+                    onValueChange={(v) => setLevel(v[0])}
+                    className="w-60"
+                />
+            </div>
             </Card>
           </>
         ) : (
