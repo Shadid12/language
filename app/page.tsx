@@ -46,6 +46,9 @@ export default function LanguageScenariosPage() {
 
   const [isRecording, setIsRecording] = useState(false);
 
+  const [messages, setMessages] = useState<string[]>([]);
+  const addMsg = (t: string) => setMessages((p) => [...p, t.trim()]);
+
   // Refs we need to reuse / clean up
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -73,7 +76,7 @@ export default function LanguageScenariosPage() {
 
     try {
       // 1. Get an ephemeral key from our Next.js API route
-      const tokenRes = await fetch("/api/session");
+      const tokenRes = await fetch(`/api/session?id=${selectedId}`);
       if (!tokenRes.ok) throw new Error("Could not fetch session token");
       const { client_secret } = await tokenRes.json();
       const EPHEMERAL_KEY = client_secret.value as string;
@@ -103,7 +106,14 @@ export default function LanguageScenariosPage() {
       // 4. Optional: Data channel for events
       const dc = pc.createDataChannel("oai-events");
       dcRef.current = dc;
-      dc.onmessage = (e) => console.log("§ realtime event", e.data);
+            dc.onmessage = (e) => {
+        try {
+          const evt = JSON.parse(e.data);
+          if (evt.type === "assistant" && evt.text) addMsg(evt.text);
+        } catch {
+          addMsg(e.data as string);
+        }
+      };
 
       // 5. Offer / answer exchange
       const offer = await pc.createOffer();
@@ -128,6 +138,7 @@ export default function LanguageScenariosPage() {
       };
       await pc.setRemoteDescription(answer);
 
+      setMessages([]); 
       setIsRecording(true);
     } catch (err) {
       console.error(err);
