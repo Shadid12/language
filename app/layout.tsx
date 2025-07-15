@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import MenuBarDemo from "@/components/MenuBarDemo";
+import SupabaseProvider from "@/components/SupabaseProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,8 +29,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <MenuBarDemo />
-        {children}
+        <SupabaseProvider>
+          <MenuBarDemo />
+          {children}
+        </SupabaseProvider>
       </body>
     </html>
   );
