@@ -1,7 +1,8 @@
 'use client';
 
 import { FormEvent, useState, useContext } from 'react';
-import { SupabaseContext } from '@/components/SupabaseProvider'; // must expose `supabase`
+import { useRouter } from 'next/navigation';
+import { SupabaseContext } from '@/components/SupabaseProvider';
 
 import {
   Card,
@@ -16,7 +17,8 @@ import { Button } from '@/components/ui/button';
 type Mode = 'signIn' | 'signUp';
 
 export default function AuthPage() {
-  const { supabase } = useContext(SupabaseContext); // supabase-js client
+  const { supabase } = useContext(SupabaseContext);
+  const router = useRouter();                     // ← NEW
   const [mode, setMode] = useState<Mode>('signIn');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,17 +42,18 @@ export default function AuthPage() {
       mode === 'signUp'
         ? await supabase.auth.signUp({ email, password })
         : await supabase.auth.signInWithPassword({ email, password });
-
     setLoading(false);
 
     if (error) {
       setMessage(error.message);
+      return;
+    }
+
+    // ✅ No error
+    if (mode === 'signIn') {
+      router.push('/'); // Redirect to home on sign-in
     } else {
-      setMessage(
-        mode === 'signUp'
-          ? 'Check your inbox to confirm your email ✉️'
-          : 'Successfully signed in! 🎉'
-      );
+      setMessage('Check your inbox to confirm your email ✉️');
     }
   }
 
